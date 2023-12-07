@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface ITurn {
   turnOn: () => void;
@@ -9,7 +9,7 @@ interface ITurn {
  * 布尔开关
  * @param init
  */
-export function useSwitch(init: boolean = false): [boolean, ITurn] {
+export function useSwitch(init = false): [boolean, ITurn] {
   const [switcher, setSwitcher] = useState(init);
   const turnOn = () => setSwitcher(true);
   const turnOff = () => setSwitcher(false);

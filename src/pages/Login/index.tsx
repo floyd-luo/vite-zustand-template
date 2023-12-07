@@ -3,6 +3,8 @@ import { Form, Input, Button } from "antd";
 import resource from "@resource";
 import { useStore } from "@/store/createStore";
 import VerifyModal from "./components/verifyModal";
+import { websiteApprove } from "@/utils";
+import style from "@/styls/copyright.module.scss";
 import styles from "./index.module.scss";
 const FormItem = Form.Item;
 const Login = (props) => {
@@ -117,17 +119,20 @@ const Login = (props) => {
             </div>
           </div>
         </div>
-        <div className={styles["copyright"]}>
-          Copyright © 2015 - {new Date().getFullYear()} By 第壹街舞 All Rights
-          Reserved
-          <span styles={{ padding: "0 10px" }}>|</span> ICP证:
+        <div className={style["copyright"]}>
+          © 2015 - {new Date().getFullYear()}
+          <span style={{ padding: "0 5px" }}>
+            {websiteApprove?.companyMain}
+          </span>
+          版权所有
+          <span style={{ padding: "0 5px" }}>|</span> ICP证:
           <a
             href="https://beian.miit.gov.cn/"
-            styles={{ marginLeft: "5px" }}
+            className={style["copyright-no"]}
             target="_blank"
             rel="noreferrer"
           >
-            粤ICP备2021154047号
+            {websiteApprove?.number}
           </a>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import { user } from "@services";
-import { localStorage } from "rct-utils";
+import { localStorage } from "front-ent-tools";
 import { Store } from "./createStore";
 
 const UserServe = user();

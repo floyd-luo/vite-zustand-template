@@ -27,7 +27,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MyLayout />}>
+        <Route element={<MyLayout />}>
           <Route index element={<Home />} />
           <Route path="Page1" element={<Page1 />} />
           <Route path="*" element={<NoMatch />} />

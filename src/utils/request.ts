@@ -2,7 +2,7 @@ import axios from "axios";
 import _ from "lodash";
 import qs from "qs";
 import queryString from "query-string";
-import { encodeSearchParams, localStorage } from "rct-utils";
+import { encodeSearchParams, localStorage } from "front-ent-tools";
 import { message as Message } from "antd";
 import navigatorInfo from "navigator-info";
 import { errorCode, gatewayErrorCode } from "./code";

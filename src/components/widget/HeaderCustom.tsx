@@ -1,7 +1,7 @@
 import React from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { localStorage } from "rct-utils";
+import { localStorage } from "front-ent-tools";
 import { useNavigate } from "react-router-dom";
 import { Menu, Layout } from "antd";
 import classNames from "classnames";

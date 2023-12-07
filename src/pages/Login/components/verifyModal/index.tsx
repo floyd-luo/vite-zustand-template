@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Spin, Modal, message } from "antd";
-import { localStorage } from "rct-utils";
+import { localStorage } from "front-ent-tools";
 import { useNavigate } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import { useStore } from "@/store/createStore";
