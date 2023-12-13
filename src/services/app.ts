@@ -1,9 +1,9 @@
-import { request, host } from "@utils";
-
+import { request, host } from "@/utils";
+import { appObjInterface, configInterface } from "@/typeings/service";
 const { SSO, NO_GATEWAY } = host.services;
 export const app = () => {
-  const obj = {};
-  const config = [
+  const obj: appObjInterface = {};
+  const config: Array<configInterface> = [
     {
       fn: "getAppToken",
       method: "get",
@@ -22,22 +22,15 @@ export const app = () => {
       url: `${SSO}/validata/dragcode`,
     },
   ];
-  config.forEach(
-    (item: {
-      fn: string;
-      url: string;
-      method: string;
-      Authorization?: boolean;
-    }) => {
-      obj[item.fn] = (data) => {
-        return request({
-          url: item.url,
-          method: item.method || "form",
-          data,
-          Authorization: item.Authorization,
-        });
-      };
-    }
-  );
+  config.forEach((item: configInterface) => {
+    obj[item.fn] = (data) => {
+      return request({
+        url: item.url,
+        method: item.method || "form",
+        data,
+        Authorization: item.Authorization,
+      });
+    };
+  });
   return obj;
 };

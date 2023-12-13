@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Spin, Modal, message } from "antd";
-import { localStorage } from "front-ent-tools";
+import { CloseOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import { localStorage, accessCode } from "front-ent-tools";
 import { useNavigate } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import { useStore } from "@/store/createStore";
+import { dataValProps } from "../../index";
 import useLongPress from "./LongPress";
 import styles from "./index.module.scss";
-import { CloseOutlined, ArrowRightOutlined } from "@ant-design/icons";
-let isMounted = true;
-const VerifyModal = (props) => {
-  const { values, onCloseModal } = props;
+interface VerifyModalProps {
+  values: dataValProps;
+  isShow: boolean;
+  onCloseModal: () => void;
+}
+const VerifyModal: React.FC<VerifyModalProps> = (props) => {
+  const { values, isShow, onCloseModal } = props;
   const navigate = useNavigate();
   const [moveStart, setMoveStart] = useState(false);
   const [initX, setInitX] = useState(0);
@@ -28,12 +33,6 @@ const VerifyModal = (props) => {
   const getValidCode = useStore((state) => state.getValidCode);
   const getUserInfo = useStore((state) => state.getUserInfo);
   const goLogin = useStore((state) => state.login);
-  useEffect(() => {
-    refreshVerify();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const refreshVerify = async () => {
     setInitX(0);
@@ -58,26 +57,28 @@ const VerifyModal = (props) => {
     onLongPress,
     defaultOptions,
   });
-
-  const moveSidler = (e, isTouch) => {
+  const moveXFn = (x: number) => {
+    const langX = x - initX;
+    if (langX >= 240) {
+      return 240;
+    } else if (langX <= 0) {
+      return 0;
+    }
+    return x - initX;
+  };
+  const moveSlider = (e: React.MouseEvent) => {
     if (!moveStart) return false;
-    const touch = e?.touches?.[0];
-    const x = isTouch && touch ? touch.clientX : e?.clientX;
-    setMoveX(() => {
-      const langX = x - initX;
-      if (langX >= 240) {
-        return 240;
-      } else if (langX <= 0) {
-        return 0;
-      }
-      return x - initX;
-    });
+    setMoveX(moveXFn(e?.clientX));
+  };
+  const moveTouchSlider = (e: React.TouchEvent) => {
+    if (!moveStart) return false;
+    setMoveX(moveXFn(e?.touches?.[0]?.clientX));
   };
 
-  const moveLeave = () => {
+  const moveLeave = async () => {
     if (!moveStart) return false;
     setMoveStart(false);
-    login();
+    await login();
   };
 
   const handleClose = () => {
@@ -92,6 +93,7 @@ const VerifyModal = (props) => {
       grant_type: "password",
       validCode_type: "drag",
       dragXpos: moveX,
+      accesCode: accessCode("1"),
     });
     if (isLoginRes?.success) {
       onCloseModal();
@@ -125,74 +127,80 @@ const VerifyModal = (props) => {
       }
     } else {
       message.error(isLoginRes?.message);
-      onCloseModal();
+      if (isLoginRes?.message.indexOf("验证失败") >= 0) {
+        await refreshVerify();
+      } else {
+        onCloseModal();
+      }
     }
   };
   return (
     <>
-      <div
-        className={styles["verify-view"]}
-        onTouchMove={(e) => moveSidler(e, "touch")}
-        onMouseMove={(e) => moveSidler(e, "")}
-        onTouchEnd={moveLeave}
-        onMouseUp={moveLeave}
-      >
-        <div className={styles["content"]}>
-          <div className={styles["verify-title"]}>
-            <div style={{ marginLeft: "3px" }}>请完成拼图验证</div>
-            <div className={styles["verify-close"]} onClick={handleClose}>
-              <CloseOutlined />
+      {isShow ? (
+        <div
+          className={styles["verify-view"]}
+          onTouchMove={(e) => moveTouchSlider(e)}
+          onMouseMove={(e) => moveSlider(e)}
+          onTouchEnd={moveLeave}
+          onMouseUp={moveLeave}
+        >
+          <div className={styles["content"]}>
+            <div className={styles["verify-title"]}>
+              <div style={{ marginLeft: "3px" }}>请完成拼图验证</div>
+              <div className={styles["verify-close"]} onClick={handleClose}>
+                <CloseOutlined />
+              </div>
             </div>
-          </div>
-          <Spin spinning={spinLoading} tip="加载中">
-            <div className={styles["verify-content"]}>
-              <div className={styles["verify-bg"]}>
-                {originalImage && (
-                  <>
-                    <img
-                      className={styles["verify-img-bg"]}
-                      src={"data:image/png;base64," + originalImage}
-                      alt=""
-                      onMouseDown={(e) => e.preventDefault()}
-                    />
-                    <div
-                      className={styles["verify-move"]}
-                      {...longPressEvent}
-                      style={{
-                        top: `${yheight}px`,
-                        left: `${moveX}px`,
-                      }}
-                    >
+            <Spin spinning={spinLoading} tip="加载中">
+              <div className={styles["verify-content"]}>
+                <div className={styles["verify-bg"]}>
+                  {originalImage && (
+                    <>
                       <img
-                        className={styles["verify-img-slider"]}
-                        src={"data:image/png;base64," + slidingImage}
+                        className={styles["verify-img-bg"]}
+                        src={"data:image/png;base64," + originalImage}
                         alt=""
                         onMouseDown={(e) => e.preventDefault()}
                       />
-                    </div>
-                  </>
-                )}
-              </div>
-              <div className={styles.sliderContainer}>
-                向右滑动填充拼图
-                <div
-                  className={`${styles["sliderMask"]} ${
-                    moveX > 0 ? styles["sidler-border"] : ""
-                  }`}
-                  style={{ width: `${moveX}px` }}
-                ></div>
-                <div
-                  {...longPressEvent}
-                  className={styles["slider"]}
-                  style={{ left: `${moveX}px` }}
-                >
-                  <ArrowRightOutlined />
+                      <div
+                        className={styles["verify-move"]}
+                        {...longPressEvent}
+                        style={{
+                          top: `${yheight}px`,
+                          left: `${moveX}px`,
+                        }}
+                      >
+                        <img
+                          className={styles["verify-img-slider"]}
+                          src={"data:image/png;base64," + slidingImage}
+                          alt=""
+                          onMouseDown={(e) => e.preventDefault()}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className={styles.sliderContainer}>
+                  向右滑动填充拼图
+                  <div
+                    className={`${styles["sliderMask"]} ${
+                      moveX > 0 ? styles["sidler-border"] : ""
+                    }`}
+                    style={{ width: `${moveX}px` }}
+                  ></div>
+                  <div
+                    {...longPressEvent}
+                    className={styles["slider"]}
+                    style={{ left: `${moveX}px` }}
+                  >
+                    <ArrowRightOutlined />
+                  </div>
                 </div>
               </div>
-            </div>
-          </Spin>
+            </Spin>
+          </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 };

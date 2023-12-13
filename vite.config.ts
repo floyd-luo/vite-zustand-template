@@ -1,14 +1,14 @@
 import { defineConfig } from "vite";
 import * as path from "path";
 import reactRefresh from "@vitejs/plugin-react-refresh";
-import { apiAddress, proxyApi } from "./src/config";
-
+import host from "./src/utils/host";
+const { envApiAddress, proxyApi } = host;
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
     proxy: {
       [proxyApi]: {
-        target: apiAddress[process.argv[3]],
+        target: envApiAddress,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
@@ -17,10 +17,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
-      "@utils": path.resolve(__dirname, "src/utils"),
-      "@resource": path.resolve(__dirname, "src/resource"),
-      "@components": path.resolve(__dirname, "src/components"),
-      "@services": path.resolve(__dirname, "src/services"),
     },
     extensions: [".js", ".jsx", ".ts", ".tsx"],
   },

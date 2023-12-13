@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button } from "antd";
-import resource from "@resource";
+import resource from "@/resource";
 import { useStore } from "@/store/createStore";
 import VerifyModal from "./components/verifyModal";
 import { websiteApprove } from "@/utils";
 import style from "@/styls/copyright.module.scss";
 import styles from "./index.module.scss";
 const FormItem = Form.Item;
-const Login = (props) => {
+export interface dataValProps {
+  username?: string;
+  password?: string;
+}
+const Login: React.FC = () => {
   const [form] = Form.useForm();
   const getValidCode = useStore((state) => state.getValidCode);
-  const [dataVal, setDataVal] = useState<object>({});
+  const [dataVal, setDataVal] = useState<dataValProps>({});
   const [verifyFlag, setVerifyFlag] = useState<boolean>(false);
   useEffect(() => {
     //监听键盘事件
@@ -25,12 +29,12 @@ const Login = (props) => {
       const values = await form.validateFields();
       setDataVal(values);
       setVerifyFlag(true);
-      getValidCode();
+      await getValidCode();
     } catch (errors) {
       console.log(errors);
     }
   };
-  const handleKeyUp = async (e) => {
+  const handleKeyUp = async (e: KeyboardEvent) => {
     const keyCode = e.keyCode;
     if (keyCode === 13) {
       await handleOk();
@@ -136,9 +140,11 @@ const Login = (props) => {
           </a>
         </div>
       </div>
-      {verifyFlag && (
-        <VerifyModal values={dataVal} onCloseModal={handleClose} />
-      )}
+      <VerifyModal
+        isShow={verifyFlag}
+        values={dataVal}
+        onCloseModal={handleClose}
+      />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { user } from "@services";
+import { user } from "@/services";
 import { localStorage } from "front-ent-tools";
 import { Store } from "./createStore";
 

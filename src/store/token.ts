@@ -1,25 +1,26 @@
 import { StateCreator } from "zustand";
 import { persist } from "zustand/middleware";
-import { app } from "@services";
+import { app } from "@/services";
 import { Store } from "./createStore";
 
 const AppServe = app();
-export interface Token {
+interface loginParamsInterface {
+  username: string;
+  password: string;
+  deviceId: string;
+  grant_type: string;
+  validCode_type: string;
+  dragXpos: string;
+}
+export interface TokenInterface {
   accessToken: string | null;
   refreshToken: string | null;
   expiresIn: number | null;
   appToken: string | null;
-  appTokenExpireTime: number | null;
+  appTokenExpireTime: string | null;
   resetToken: () => void;
   getAppToken: () => void;
-  login: (params: {
-    username: string;
-    password: string;
-    deviceId: string;
-    grant_type: string;
-    validCode_type: string;
-    dragXpos: string;
-  }) => Promise<boolean>;
+  login: (params: loginParamsInterface) => Promise<boolean>;
   getValidCode: () => Promise<{
     deviceId: string;
     originalImage: string;
@@ -39,8 +40,8 @@ export const initToken = {
 export const createToken: StateCreator<
   Store,
   [],
-  [["zustand/persist", Token]],
-  Token
+  [["zustand/persist", TokenInterface]],
+  TokenInterface
 > = persist(
   (set) => ({
     ...initToken,
@@ -63,7 +64,7 @@ export const createToken: StateCreator<
         });
       }
     },
-    login: async (params) => {
+    login: async (params: loginParamsInterface) => {
       try {
         const res = await AppServe.login(params);
         if (res) {
