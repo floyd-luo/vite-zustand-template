@@ -4,47 +4,60 @@ import { app } from "@/services";
 import { Store } from "./createStore";
 
 const AppServe = app();
-interface loginParamsInterface {
+interface deviceIdInterface {
+  deviceId: string;
+}
+export interface validCodeInterface extends deviceIdInterface {
+  originalImage?: string;
+  slidingImage?: string;
+  yheight?: number;
+}
+interface loginParamsInterface extends deviceIdInterface {
   username: string;
   password: string;
-  deviceId: string;
   grant_type: string;
   validCode_type: string;
-  dragXpos: string;
+  dragXpos: number;
+  accesCode: string;
 }
-export interface TokenInterface {
+interface TokenInterface {
   accessToken: string | null;
   refreshToken: string | null;
   expiresIn: number | null;
   appToken: string | null;
   appTokenExpireTime: string | null;
+}
+export interface TokenStateInterface
+  extends validCodeInterface,
+    TokenInterface {
   resetToken: () => void;
   getAppToken: () => void;
-  login: (params: loginParamsInterface) => Promise<boolean>;
-  getValidCode: () => Promise<{
-    deviceId: string;
-    originalImage: string;
-    slidingImage: string;
-    xwidth: number | null;
-    yheight: number | null;
-  }>;
+  login: (params: loginParamsInterface) => any;
+  getValidCode: () => void;
 }
-
-export const initToken = {
+const initToken: TokenInterface = {
   appToken: null,
   appTokenExpireTime: null,
   accessToken: null,
   refreshToken: null,
   expiresIn: null,
 };
+export const initState: TokenStateInterface = {
+  ...initToken,
+  deviceId: "",
+  resetToken: () => null,
+  getAppToken: () => null,
+  login: () => null,
+  getValidCode: () => null,
+};
 export const createToken: StateCreator<
   Store,
   [],
-  [["zustand/persist", TokenInterface]],
-  TokenInterface
+  [["zustand/persist", TokenStateInterface]],
+    TokenStateInterface
 > = persist(
   (set) => ({
-    ...initToken,
+    ...initState,
     // 重置token信息
     resetToken: () => {
       set({ ...initToken });

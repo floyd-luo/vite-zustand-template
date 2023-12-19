@@ -1,4 +1,3 @@
-import { AppstoreOutlined } from "@ant-design/icons";
 export interface IFMenuBase {
   key: string;
   path: string;

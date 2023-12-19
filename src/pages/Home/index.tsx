@@ -1,12 +1,12 @@
 import React, { useState, useTransition } from "react";
-import { Spin } from "antd";
+import { Spin, Input } from "antd";
 
 function Home() {
   const [value, setValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isPending, startTransition] = useTransition();
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     setValue(inputValue);
     startTransition(() => {
@@ -16,7 +16,7 @@ function Home() {
 
   return (
     <div>
-      <input onChange={handleChange} value={value} />
+      <Input onChange={handleChange} value={value} />
       <Spin tip="Loading..." spinning={isPending}>
         <p>{searchQuery}</p>
       </Spin>

@@ -1,4 +1,3 @@
-import React from "react";
 import { Layout } from "antd";
 import { websiteApprove } from "@/utils";
 import style from "@/styls/copyright.module.scss";

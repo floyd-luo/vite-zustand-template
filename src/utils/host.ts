@@ -1,8 +1,5 @@
 interface envHostInterfaces {
-  dev: string;
-  qa: string;
-  pre: string;
-  prod: string;
+  [propName: string]: string;
 }
 interface servicesInterfaces {
   NO_GATEWAY: string;
@@ -30,13 +27,6 @@ interface servicesInterfaces {
   TOB_MODULE_AGGSERVICE: string;
   MARKETING_SYNTHESIS_SERVICE: string;
 }
-interface hostInterfaces {
-  proxyApi: string;
-  services: servicesInterfaces;
-  productionStaticResourceHost: string;
-  envFileResourceHost: string;
-  envApiAddress: string;
-}
 /**
  * 当前环境变量
  */
@@ -46,7 +36,7 @@ interface hostInterfaces {
  * 接口地址
  * @description env 可为主要环境或自定义地址
  */
-const apiAddress: envHostInterfaces | any = {
+const apiAddress: envHostInterfaces = {
   dev: "http://192.168.10.21:31000",
   qa: "http://192.168.10.61:31000",
   pre: "http://192.168.10.201:31000",
@@ -57,14 +47,14 @@ const apiAddress: envHostInterfaces | any = {
  */
 const proxyApi = "/api";
 // 静态资源前缀URL
-const fileResourceHost: envHostInterfaces | any = {
+const fileResourceHost: envHostInterfaces = {
   dev: "http://192.168.10.21:30999", // 外网:无
   qa: "http://192.168.10.61:30999", //外网:http://filecdn-fat.ailecheng.com:31999
   pre: "http://192.168.10.201:30999/", //外网:http://filecdn-uat.ailecheng.com:30999
   prod: "https://filecdn.ailecheng.com",
 };
 const staticResourceHost = "https://filecdn.ailecheng.com";
-const services = (env: string): servicesInterfaces => ({
+const services = ((env: string): servicesInterfaces => ({
   NO_GATEWAY: env,
   SSO: `${env}/api-auth`,
   USER: `${env}/user-center`,
@@ -89,12 +79,5 @@ const services = (env: string): servicesInterfaces => ({
   USERCENTER: `${env}/user-center`,
   TOB_MODULE_AGGSERVICE: `${env}/tob-module-aggservice`,
   MARKETING_SYNTHESIS_SERVICE: `${env}/marketing-synthesis-service`,
-});
-const host: hostInterfaces = {
-  proxyApi,
-  services: services(proxyApi),
-  productionStaticResourceHost: staticResourceHost,
-  envFileResourceHost: fileResourceHost[import.meta.env.mode],
-  envApiAddress: apiAddress[import.meta.env.mode],
-};
-export default host;
+}))(proxyApi);
+export { proxyApi, staticResourceHost, services, apiAddress, fileResourceHost };

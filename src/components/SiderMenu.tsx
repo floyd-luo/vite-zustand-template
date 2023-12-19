@@ -9,7 +9,7 @@ const renderMenuItem = (
 ) => (
   <Menu.Item key={item.key}>
     <Link to={(item.route || item.key) + (item.query || "")}>
-      <span className="nav-text">{item.title}</span>
+      <span className="nav-text">{item.label}</span>
     </Link>
   </Menu.Item>
 );
@@ -21,12 +21,12 @@ const renderSubMenu = (item: IFMenu) => {
       title={
         <span>
           {/* {item.icon && <Icon type={item.icon} />} */}
-          <span className="nav-text">{item.title}</span>
+          <span className="nav-text">{item.label}</span>
         </span>
       }
     >
-      {item.subs!.map((sub) =>
-        sub.subs ? renderSubMenu(sub) : renderMenuItem(sub)
+      {item.children!.map((sub) =>
+        sub.children ? renderSubMenu(sub) : renderMenuItem(sub)
       )}
     </Menu.SubMenu>
   );
@@ -48,7 +48,7 @@ const SiderMenu = ({ menus, ...props }: SiderMenuProps) => {
   }, [menus]);
   return dragItems.map((item: IFMenu) => (
     <Menu {...props} key={item.key}>
-      {item.subs! ? renderSubMenu(item) : renderMenuItem(item)}
+      {item.children! ? renderSubMenu(item) : renderMenuItem(item)}
     </Menu>
   ));
 };

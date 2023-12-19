@@ -11,10 +11,11 @@ export interface User {
   getUserInfo: () => Promise<any>;
 }
 
-export const initUser = {
+export const initUser: User = {
   user: {},
   dataPermission: {},
   userOtherInfo: {},
+  getUserInfo: () => new Promise(() => null),
 };
 export const createUser: StateCreator<
   Store,

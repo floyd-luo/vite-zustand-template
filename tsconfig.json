@@ -1,18 +1,24 @@
+// tsconfig.json介绍 https://zhuanlan.zhihu.com/p/145210784
+//详细配置：https://www.typescriptlang.org/tsconfig
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "es6",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
+    "lib": ["ES2020", "dom","dom.iterable","esnext"],
+    "module": "ES6",
+    "removeComments": true,
     "skipLibCheck": true,
-    "types": ["node"],
+    "sourceMap": true,
+    "types": ["node","vite/client"],
     /* Bundler mode */
     "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "allowUmdGlobalAccess": true,
     "baseUrl": "./",
     /* Linting */
     "strict": true,
@@ -24,11 +30,8 @@
       "@/*":["src/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src","vite.config.ts"],
   "exclude": [
     "node_modules",
-    "vite.config.ts",
-    ".eslintrc.cjs",
-    "src/utils/host.ts"
   ],
 }

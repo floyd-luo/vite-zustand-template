@@ -1,17 +1,41 @@
 import { defineConfig } from "vite";
 import * as path from "path";
+import externalGlobals from "rollup-plugin-external-globals";
+import { createHtmlPlugin } from "vite-plugin-html";
 import reactRefresh from "@vitejs/plugin-react-refresh";
-import host from "./src/utils/host";
-const { envApiAddress, proxyApi } = host;
+import { apiAddress, proxyApi } from "./src/utils/host";
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
     proxy: {
       [proxyApi]: {
-        target: envApiAddress,
+        target: apiAddress[process.argv[3]],
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+    },
+  },
+  esbuild: {
+    drop: process.argv[3] === "prod" ? ["console", "debugger"] : [],
+  },
+  build: {
+    target: "es2020",
+    minify: "esbuild",
+    rollupOptions: {
+      output: {
+        chunkFileNames: "js/[name]-[hash].js", // 引入文件名的名称
+        entryFileNames: "js/[name]-[hash].js", // 包的入口文件名称
+        assetFileNames: "[ext]/[name]-[hash].[ext]", // 资源文件像 字体，图片等
+      },
+      external: ["react", "react-dom", "axios"],
+      plugins: [
+        externalGlobals({
+          // "在项目中引入的变量名称"："CDN包导出的名称，一般在CDN包中都是可见的"
+          react: "React",
+          axios: "axios",
+          "react-dom": "ReactDOM",
+        }),
+      ],
     },
   },
   resolve: {
@@ -40,9 +64,24 @@ export default defineConfig({
       //     // 配置成函数以后, 返回值就决定了他最终显示的类型
       //     return `${name}_${Math.random().toString(36).substr(3, 8)}`
       // },
-      hashPrefix: "dyjw", // 生成hash会根据类名 + 一些其他的字符串(文件名 + 他内部随机生成一个字符串)去进行生成, 如果想要生成hash更加的独特一点, 可以配置hashPrefix, 配置的这个字符串会参与到最终的hash生成, （hash: 只要字符串有一个字不一样, 那么生成的hash就完全不一样, 但是只要字符串完全一样, 生成的hash就会一样）
+      hashPrefix: "dreamer_rossi", // 生成hash会根据类名 + 一些其他的字符串(文件名 + 他内部随机生成一个字符串)去进行生成, 如果想要生成hash更加的独特一点, 可以配置hashPrefix, 配置的这个字符串会参与到最终的hash生成, （hash: 只要字符串有一个字不一样, 那么生成的hash就完全不一样, 但是只要字符串完全一样, 生成的hash就会一样）
     },
   },
   define: {},
-  plugins: [reactRefresh()],
+  plugins: [
+    reactRefresh(),
+    createHtmlPlugin({
+      minify: true,
+      inject: {
+        data: {
+          reactscript:
+            '<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>',
+          reactdomscript:
+            '<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>',
+          axiosscript:
+            '<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>',
+        },
+      },
+    }),
+  ],
 });

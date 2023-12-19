@@ -1,24 +1,46 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button } from "antd";
+import { localStorage } from "front-ent-tools";
 import resource from "@/resource";
 import { useStore } from "@/store/createStore";
 import VerifyModal from "./components/verifyModal";
-import { websiteApprove } from "@/utils";
+import { websiteApprove, getDefaultHP } from "@/utils";
 import style from "@/styls/copyright.module.scss";
 import styles from "./index.module.scss";
 const FormItem = Form.Item;
 export interface dataValProps {
-  username?: string;
-  password?: string;
+  username: string;
+  password: string;
 }
 const Login: React.FC = () => {
   const [form] = Form.useForm();
   const getValidCode = useStore((state) => state.getValidCode);
-  const [dataVal, setDataVal] = useState<dataValProps>({});
+  const getUserInfo = useStore((state) => state.getUserInfo);
+  const [userHP, setUserHP] = useState<string>("");
+  const user = useStore((state) => state.user);
+  const [dataVal, setDataVal] = useState<dataValProps>({
+    username: "",
+    password: "",
+  });
+  const [isLogined, setIsLogined] = useState<boolean>(false);
   const [verifyFlag, setVerifyFlag] = useState<boolean>(false);
+  const handleKeyUp = async (e: any) => {
+    const keyCode = e.code;
+    if (keyCode === "Enter") {
+      await handleOk();
+    }
+  };
   useEffect(() => {
     //监听键盘事件
     document.addEventListener("keyup", handleKeyUp, false);
+    //检查是否处于登录状态
+    if (localStorage.get("accessToken")) {
+      getUserInfo().then((r) => {
+        if (r?.user?.id) {
+          setIsLogined(true);
+        }
+      });
+    }
     return () => {
       //销毁键盘事件
       document.removeEventListener("keyup", handleKeyUp, false);
@@ -29,20 +51,15 @@ const Login: React.FC = () => {
       const values = await form.validateFields();
       setDataVal(values);
       setVerifyFlag(true);
-      await getValidCode();
+      getValidCode();
     } catch (errors) {
       console.log(errors);
-    }
-  };
-  const handleKeyUp = async (e: KeyboardEvent) => {
-    const keyCode = e.keyCode;
-    if (keyCode === 13) {
-      await handleOk();
     }
   };
   const handleClose = () => {
     setVerifyFlag(false);
   };
+  const handleEnter = () => {};
   return (
     <div className={styles["login"]}>
       <div className={styles["warp"]}>
@@ -50,7 +67,7 @@ const Login: React.FC = () => {
           <div className={styles["content"]}>
             <div className={styles["left"]}>
               <img
-                src="https://filecdn.ailecheng.com/20230612/d407580a001d2a86dbbf9bde6b90d8b0.jpg"
+                src="https://filecdn.ailecheng.com/20231215/75909f362f2dec34a7cdc3fdf5a9116b.webp"
                 alt=""
               />
             </div>
@@ -60,65 +77,109 @@ const Login: React.FC = () => {
                   <img src={resource.logo} alt="" />
                   <div className={styles["welcome"]}>后台管理系统</div>
                 </div>
-                <div className={styles["form-warp"]}>
-                  <Form form={form}>
-                    <FormItem
-                      hasFeedback
-                      name="username"
-                      rules={[
-                        {
-                          required: true,
-                          message: "请输入员工账号",
-                        },
-                      ]}
-                    >
-                      <Input
-                        className={styles["input-form"]}
-                        prefix={
-                          <i
-                            className={[styles.userIcon, styles.icon].join(" ")}
-                          ></i>
-                        }
-                        placeholder="请输入员工账号"
+                <div className={styles["login-content"]}>
+                  {isLogined ? (
+                    <div className={styles["rapidly-enter"]}>
+                      <div className={styles["rapidly-title"]}>
+                        为保障您的账号安全，请确认继续用以下账号登录
+                      </div>
+                      <div className={styles["rapidly-head-portrait"]}>
+                        <img
+                          alt={`${user?.staffName}`}
+                          onError={() => {
+                            setUserHP(getDefaultHP(user?.sex?.toString()));
+                          }}
+                          src={userHP}
+                          style={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: "50%",
+                          }}
+                        />
+                      </div>
+                      <div className={styles["rapidly-userName"]}>
+                        {user?.staffName}
+                      </div>
+                      <Button
+                        type="primary"
                         size="large"
-                        onPressEnter={handleOk}
-                      />
-                    </FormItem>
-                    <FormItem
-                      hasFeedback
-                      name="password"
-                      rules={[
-                        {
-                          required: true,
-                          message: "请输入登录密码",
-                        },
-                      ]}
-                    >
-                      <Input
-                        placeholder="请输入登录密码"
-                        className={styles["input-form"]}
-                        type="password"
+                        onClick={handleEnter}
+                        className={styles["rapidly-enter"]}
+                      >
+                        快速进入
+                      </Button>
+                      <div className={styles["rapidly-other"]}>
+                        使用其他账号登录
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className={styles["form-warp"]}>
+                        <Form form={form}>
+                          <FormItem
+                            hasFeedback
+                            name="username"
+                            rules={[
+                              {
+                                required: true,
+                                message: "请输入员工账号",
+                              },
+                            ]}
+                          >
+                            <Input
+                              className={styles["input-form"]}
+                              prefix={
+                                <i
+                                  className={[
+                                    styles.userIcon,
+                                    styles.icon,
+                                  ].join(" ")}
+                                ></i>
+                              }
+                              placeholder="请输入员工账号"
+                              size="large"
+                              onPressEnter={handleOk}
+                            />
+                          </FormItem>
+                          <FormItem
+                            hasFeedback
+                            name="password"
+                            rules={[
+                              {
+                                required: true,
+                                message: "请输入登录密码",
+                              },
+                            ]}
+                          >
+                            <Input
+                              placeholder="请输入登录密码"
+                              className={styles["input-form"]}
+                              type="password"
+                              size="large"
+                              prefix={
+                                <b
+                                  className={[
+                                    styles.passwordIcon,
+                                    styles.icon,
+                                  ].join(" ")}
+                                ></b>
+                              }
+                              onPressEnter={handleOk}
+                            />
+                          </FormItem>
+                        </Form>
+                      </div>
+                      <Button
+                        type="primary"
                         size="large"
-                        prefix={
-                          <b
-                            className={[styles.passwordIcon, styles.icon].join(
-                              " "
-                            )}
-                          ></b>
-                        }
-                        onPressEnter={handleOk}
-                      />
-                    </FormItem>
-                  </Form>
+                        onClick={handleOk}
+                        className={styles["login-btn"]}
+                      >
+                        登录
+                      </Button>
+                    </>
+                  )}
                 </div>
-                <Button
-                  type="primary"
-                  size="large"
-                  onClick={handleOk}
-                  className={styles["login-btn"]}
-                >
-                  登录
-                </Button>
               </div>
             </div>
           </div>

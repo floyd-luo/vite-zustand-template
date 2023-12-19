@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Menu } from "antd";
+import type { Location } from "react-router";
 import routes from "../router/config";
 import { useSwitch } from "../utils/hooks";
 import { usePrevious } from "ahooks";
@@ -10,6 +11,7 @@ interface SiderCustomProps {
   popoverHide?: () => void;
   collapsed?: boolean;
   smenus?: any;
+  location: Location;
 }
 
 interface IMenu {
@@ -17,7 +19,7 @@ interface IMenu {
   selectedKey: string;
 }
 
-const SiderCustom = (props: SiderCustomProps) => {
+const SiderCustom: React.FC<SiderCustomProps> = (props) => {
   const { location, collapsed: pCollapsed } = props;
   const [collapsed, tCollapsed] = useSwitch();
   const [firstHide, tFirstHide] = useSwitch();
@@ -73,7 +75,7 @@ const SiderCustom = (props: SiderCustomProps) => {
     setMenu((state) => ({ ...state, openKeys: v }));
     tFirstHide.turnOff();
   };
-  const menuItemsCustom = (datas) => {
+  /*const menuItemsCustom = (datas) => {
     return datas?.map((i) => {
       const r = { ...i };
       if (!r?.children) {
@@ -84,7 +86,7 @@ const SiderCustom = (props: SiderCustomProps) => {
       }
       return r;
     });
-  };
+  };*/
   return (
     <Header>
       <Sider

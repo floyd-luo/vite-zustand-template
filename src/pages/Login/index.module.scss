@@ -1,7 +1,19 @@
 .login {
   width: 100vw;
   height: 100vh;
-  background: #fff;
+  background: #FF7400;
+
+  input {
+    background: rgba(255, 255, 255, 0) !important;
+  }
+
+  input:-webkit-autofill {
+    transition: background 5000s ease-in-out 0s;
+  }
+
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #333 !important;
+  }
 
   .warp {
     width: 1120px;
@@ -17,12 +29,13 @@
         transform: translateY(-50%);
         display: flex;
         width: 1120px;
-        height: 750px;
+        height: 550px;
         margin: 0 auto;
 
         .left {
           width: 50%;
-          >img{
+
+          > img {
             display: block;
             width: 100%;
             height: 100%;
@@ -35,47 +48,94 @@
           position: relative;
           width: 50%;
           background: #fff;
-          .right-content{
+          border-radius: 10px;
+
+          .right-content {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%,-50%);
+            transform: translate(-50%, -50%);
             width: 400px;
-            .logo{
+
+            .logo {
               display: flex;
               align-items: baseline;
               justify-content: center;
               font-size: 18px;
               font-weight: 500;
               margin-bottom: 30px;
-              >img{
+
+              > img {
                 display: block;
                 object-fit: contain;
                 width: 250px;
               }
-              .welcome{
+
+              .welcome {
                 text-align: left;
                 line-height: 10px;
+                color: #000000;
               }
             }
 
-            .form-warp{
-              .icon {
-                display: inline-block;
-                width: 16px;
-                height: 16px;
-                background-size: 100% 100%;
-                &.userIcon {
-                  background-image: url('https://filecdn.ailecheng.com/20230613/527b395a833f194144923ab4ce5dc2eb.png');
+            .login-content {
+              .rapidly-enter {
+                display:flex;
+                align-items: center;
+                flex-direction: column;
+                .rapidly-title {
+                  font-size: 14px;
+                  color: #000000;
+                  text-align: left;
+                  width: 100%;
                 }
 
-                &.passwordIcon {
-                  background-image: url('https://filecdn.ailecheng.com/20230613/eb1a950e3871e0ad6239849b9955a5b6.png');
+                .rapidly-head-portrait {
+                  margin-top:40px;
+                }
+
+                .rapidly-userName {
+                  font-size: 16px;
+                  text-align: center;
+                  font-weight: 500;
+                  color: #000000;
+                  width: 100%;
+                }
+
+                .rapidly-enter {
+                  width: 100%;
+                  margin-top: 40px;
+                }
+
+                .rapidly-other {
+                  font-size: 14px;
+                  color: #000000;
+                  text-align: left;
+                  width: 100%;
+                  margin-top: 10px;
                 }
               }
-            }
-            .login-btn{
-              width: 100%;
+
+              .form-warp {
+                .icon {
+                  display: inline-block;
+                  width: 16px;
+                  height: 16px;
+                  background-size: 100% 100%;
+
+                  &.userIcon {
+                    background-image: url('https://filecdn.ailecheng.com/20230613/527b395a833f194144923ab4ce5dc2eb.png');
+                  }
+
+                  &.passwordIcon {
+                    background-image: url('https://filecdn.ailecheng.com/20230613/eb1a950e3871e0ad6239849b9955a5b6.png');
+                  }
+                }
+              }
+
+              .login-btn {
+                width: 100%;
+              }
             }
           }
         }

@@ -1,9 +1,11 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+const root = createRoot(document.getElementById("root") as HTMLElement);
+//StrictMode严格模式渲染两次 https://react.docschina.org/learn/synchronizing-with-effects
+root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>

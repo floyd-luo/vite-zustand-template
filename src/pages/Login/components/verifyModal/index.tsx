@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Spin, Modal, message } from "antd";
 import { CloseOutlined, ArrowRightOutlined } from "@ant-design/icons";
-import { localStorage, accessCode } from "front-ent-tools";
+import { localStorage, getAccessCode } from "front-ent-tools";
 import { useNavigate } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import { useStore } from "@/store/createStore";
@@ -38,11 +38,10 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
     setInitX(0);
     setMoveX(0);
     setSpinLoading(true);
-    await getValidCode();
+    getValidCode();
     setSpinLoading(false);
   };
-
-  const onLongPress = (e: any): void => {
+  const onLongPress = (e: React.TouchEvent & React.MouseEvent): void => {
     setMoveStart(true);
     const touch = e?.touches?.[0];
     setInitX(touch ? touch.clientX : e.clientX);
@@ -87,14 +86,17 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
 
   const login = async () => {
     setSpinLoading(true);
+    const { username, password } = values;
     const isLoginRes = await goLogin({
-      ...values,
+      username,
+      password,
       deviceId: deviceId,
       grant_type: "password",
       validCode_type: "drag",
       dragXpos: moveX,
-      accesCode: accessCode("1"),
+      accesCode: getAccessCode("1"),
     });
+    setSpinLoading(false);
     if (isLoginRes?.success) {
       onCloseModal();
       const userInfo = await getUserInfo();
@@ -130,6 +132,8 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
       if (isLoginRes?.message.indexOf("验证失败") >= 0) {
         await refreshVerify();
       } else {
+        setInitX(0);
+        setMoveX(0);
         onCloseModal();
       }
     }

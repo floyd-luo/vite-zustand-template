@@ -24,12 +24,16 @@ export const app = () => {
   ];
   config.forEach((item: configInterface) => {
     obj[item.fn] = (data) => {
-      return request({
+      const options = {
         url: item.url,
         method: item.method || "form",
         data,
         Authorization: item.Authorization,
-      });
+      };
+      if (item.fn === "login") {
+        return request(options, { accesCode: data?.accesCode });
+      }
+      return request(options);
     };
   });
   return obj;

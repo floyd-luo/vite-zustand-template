@@ -1,12 +1,45 @@
-import axios from "axios";
-import _ from "lodash";
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { isArray, isEmpty, cloneDeep } from "lodash-es";
 import qs from "qs";
-import queryString from "query-string";
 import { encodeSearchParams, localStorage } from "front-ent-tools";
 import { message as Message } from "antd";
 import navigatorInfo from "navigator-info";
 import { errorCode, gatewayErrorCode } from "./code";
 
+interface optionsInterface {
+  method: string;
+  data: any;
+  url: string;
+  Authorization?: boolean;
+  notThrowWhenError?: boolean;
+}
+interface otherConfigInterface {
+  [propsName: string]: Promise<AxiosResponse<any, any>> | Promise<any>;
+}
+interface typeInterface {
+  [propName: string]: (
+    data: any,
+    url: string,
+    token: string,
+    AppToken: string,
+    method: string
+  ) => Promise<AxiosResponse<any, any>> | Promise<any>;
+}
+interface configInterface extends InternalAxiosRequestConfig<any> {
+  mark?: string;
+}
+interface responseInterface extends AxiosResponse {
+  config: configInterface;
+}
+interface requestInterface {
+  [propName: string]: any;
+}
+declare global {
+  interface Window {
+    requestRecord: any;
+  }
+}
+const _requestRecord: requestInterface = {};
 const _navigatorInfo = navigatorInfo();
 // 设置post header
 axios.defaults.headers.post["Content-Type"] =
@@ -25,15 +58,14 @@ axios.defaults.headers.common["screen_width"] = window.screen.width;
 axios.defaults.headers.common["screen_height"] = window.screen.height;
 let errNum = 0;
 const CancelToken = axios.CancelToken;
-const sources = {};
+window.requestRecord = _requestRecord;
 axios.interceptors.request.use(
   (config: any) => {
     const request = config.url + "_" + new Date().getTime().toString();
     // 这里配置了cancelToken属性，覆盖了原请求中的cancelToken
     config.cancelToken = new CancelToken((cancel) => {
-      sources[request] = cancel;
+      _requestRecord[request] = cancel;
     });
-    config.mark = request;
     return config;
   },
   (error) => {
@@ -41,23 +73,18 @@ axios.interceptors.request.use(
   }
 );
 axios.interceptors.response.use(
-  (response) => {
-    // 对响应数据做点什么
-    const mark = response.config.mark;
-    delete sources[mark];
-    return response;
-  },
+  (response: responseInterface) => response,
   (error) => {
     if (error?.response?.status === 401) {
       console.log(error.response);
-      Object.keys(sources).forEach((item) => {
-        sources[item]?.();
+      Object.keys(_requestRecord).forEach((item) => {
+        _requestRecord[item]?.();
       });
     }
     throw error;
   }
 );
-const click = (node) => {
+const click = (node: HTMLElement) => {
   try {
     node.dispatchEvent(new MouseEvent("click"));
   } catch (e) {
@@ -65,15 +92,15 @@ const click = (node) => {
     node.dispatchEvent(evt);
   }
 };
-const type = {
-  get: (data, url) =>
+const type: typeInterface = {
+  get: (data: any, url: string) =>
     axios.get(url, {
       params: data,
       paramsSerializer: (params) => {
         return qs.stringify(params, { indices: false });
       },
     }),
-  getjoint: (data, url) => {
+  getjoint: (data: any, url: string) => {
     const { uuid, random } = data;
     return axios.get(`${url}/${uuid}`, {
       params: { random },
@@ -84,44 +111,45 @@ const type = {
       },
     });
   },
-  getid: (data, url) => axios.get(`${url}/${data}`),
-  getids: (data, url) => {
+  getid: (data: any, url: string) => axios.get(`${url}/${data}`),
+  getids: (data: any, url: string) => {
     let _data = "";
-    if (_.isArray(data)) {
+    if (isArray(data)) {
       _data = data.join("/");
     }
     return axios.get(`${url}/${_data}`);
   },
-  delete: (data, url) => {
-    const delData = _.isEmpty(data) ? "" : `/${data}`;
+  delete: (data: any, url: string) => {
+    const delData = isEmpty(data) ? "" : `/${data}`;
     return axios.delete(url + delData);
   },
-  deleteid: (data, url) => axios.delete(`${url}/${data}`),
-  deleteobj: (data, url) => axios.delete(`${url}?${qs.stringify(data)}`),
-  post: (data, url) =>
+  deleteid: (data: any, url: string) => axios.delete(`${url}/${data}`),
+  deleteobj: (data: any, url: string) =>
+    axios.delete(`${url}?${qs.stringify(data)}`),
+  post: (data: any, url: string) =>
     axios({
       url,
       data: data,
       method: "post",
       headers: { "Content-type": "application/json;charset=UTF-8" },
     }),
-  postid: (data, url) => axios.post(`${url}/${data}`),
-  postquery: (data, url) => {
-    const cloneData = qs.stringify(_.cloneDeep(data));
+  postid: (data: any, url: string) => axios.post(`${url}/${data}`),
+  postquery: (data: any, url: string) => {
+    const cloneData = qs.stringify(cloneDeep(data));
     return axios({
       url,
       data: cloneData,
       method: "post",
     });
   },
-  put: (data, url) => axios.put(url, data),
-  putid: (data, url) => axios.put(`${url}/${data}`),
-  patch: (data, url) => {
-    const cloneData = qs.stringify(_.cloneDeep(data));
+  put: (data: any, url: string) => axios.put(url, data),
+  putid: (data: any, url: string) => axios.put(`${url}/${data}`),
+  patch: (data: any, url: string) => {
+    const cloneData = qs.stringify(cloneDeep(data));
     return axios.patch(url, cloneData);
   },
-  form: (data, url) => {
-    const cloneData = qs.stringify(_.cloneDeep(data));
+  form: (data: any, url: string) => {
+    const cloneData = qs.stringify(cloneDeep(data));
     return axios({
       url,
       data: cloneData,
@@ -131,7 +159,13 @@ const type = {
       },
     });
   },
-  download: (data, url, token, method = "get", AppToken) => {
+  download: (
+    data: any,
+    url: string,
+    token: string,
+    AppToken: string,
+    method: string
+  ) => {
     return new Promise(function (resolve, reject) {
       const xhr = new XMLHttpRequest();
       xhr.open(
@@ -178,11 +212,19 @@ const type = {
       xhr.send(method === "post" ? JSON.stringify(data) : undefined);
     });
   },
-  downloadpost: (data, url, token, method, AppToken) =>
-    type.download(data, url, token, "post", AppToken),
+  downloadpost: (
+    data: any,
+    url: string,
+    token: string,
+    method = "post",
+    AppToken: string
+  ) => type.download(data, url, token, method, AppToken),
 };
 // 如果不需要token验证则在接口配置里面加入Authorization = false即可
-const fetch = (options) => {
+const fetch = (
+  options: optionsInterface,
+  extraHeader?: otherConfigInterface
+) => {
   const { method = "form", data = {}, url, Authorization = true } = options;
   const token = localStorage.get("accessToken");
   const AppToken = localStorage.get("appToken");
@@ -195,6 +237,11 @@ const fetch = (options) => {
   if (AppToken) {
     axios.defaults.headers.common["AppToken"] = AppToken;
   }
+  if (extraHeader?.accesCode) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore 后端加的验证登录的header不是常规用法
+    axios.defaults.headers.common["accesCode"] = extraHeader?.accesCode;
+  }
   return type[method.toLowerCase()](
     data,
     url,
@@ -204,7 +251,7 @@ const fetch = (options) => {
   );
 };
 // 401token无效 和网关appToken无效
-const tokenInvalid = async (pathname) => {
+const tokenInvalid = async (pathname: string) => {
   localStorage.remove([
     "access_token",
     "admin_isLogin",
@@ -218,14 +265,12 @@ const tokenInvalid = async (pathname) => {
     "password",
   ]);
   errNum += 1;
-  await router.push({
-    pathname: "/login",
-    search: queryString.stringify({
-      from: pathname,
-    }),
-  });
+  window.history.pushState({ from: pathname }, "", "/login");
 };
-export default function request(options, config = { formatResponse: true }) {
+export default function request(
+  options: optionsInterface,
+  otherConfig?: otherConfigInterface
+) {
   const pathname = window.location.pathname;
   if (
     options?.url.indexOf("oauth/user/token") >= 0 ||
@@ -233,7 +278,7 @@ export default function request(options, config = { formatResponse: true }) {
   ) {
     errNum = 0;
   }
-  return fetch(options)
+  return fetch(options, otherConfig)
     .then((response) => {
       const data = response.data;
       //已被网关拦截，跳转登录页面
@@ -290,13 +335,3 @@ export default function request(options, config = { formatResponse: true }) {
       });
     });
 }
-
-export const getNoInterrauptRequestFromService = (fn) => (args) =>
-  new Promise((resolve) => {
-    fn(args)
-      .then(resolve)
-      .catch((e) => {
-        Message.error(e.message);
-        resolve(e);
-      });
-  });
