@@ -4,12 +4,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useStore } from "@/store/createStore";
 import { localStorage } from "front-ent-tools";
 import MyLayout from "@/layouts";
-import Home from "./pages/Home";
-import Page1 from "./pages/Page1";
-import Login from "./pages/Login";
+import Login from "@/pages/Login";
+import routers from "@/router";
 
 let flag = false;
-const NoMatch = () => <div>No Match</div>;
+const NoMatch = () => <div style={{ color: "#000" }}>No Match</div>;
 const App = () => {
   const getAppToken = useStore((state) => state.getAppToken);
   useEffect(() => {
@@ -37,8 +36,14 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route element={<MyLayout />}>
-            <Route index element={<Home />} />
-            <Route path="Page1" element={<Page1 />} />
+            {routers?.map((item) => (
+              <Route
+                key={item?.id}
+                index={item?.id === "0"}
+                path={item?.path}
+                element={item?.element}
+              />
+            ))}
             <Route path="*" element={<NoMatch />} />
           </Route>
           <Route path="/login" element={<Login />} />

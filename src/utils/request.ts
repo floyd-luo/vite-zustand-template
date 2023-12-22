@@ -287,6 +287,9 @@ export default function request(
         if (errNum === 0) {
           Message.error("用户已过期，请重新登录");
         }
+        if (data?.code === "1002") {
+          localStorage.remove("appToken");
+        }
         tokenInvalid(pathname);
         return;
       }

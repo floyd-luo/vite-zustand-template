@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { Layout, Menu } from "antd";
-import {
-  PieChartOutlined,
-  DesktopOutlined,
-  AppstoreOutlined,
-} from "@ant-design/icons";
+import menuConfigs from "./menuConfigs";
 import styles from "./index.module.scss";
 const { Sider } = Layout;
 
@@ -14,38 +10,13 @@ const logoCloseIcon =
   "https://filecdn.ailecheng.com/20210727/cee03fb5850f0c2bd76ed4df09a00ab8.png";
 const MySider = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const items = [
-    {
-      key: "1",
-      icon: <PieChartOutlined />,
-      children: [
-        {
-          key: "sub1",
-          label: "Option sub1",
-          title: "Option sub1",
-        },
-      ],
-      label: "Option 1",
-      title: "Option 1",
-    },
-    {
-      key: "2",
-      icon: <DesktopOutlined />,
-      children: [],
-      label: "Option 2",
-      title: "Option 2",
-    },
-    {
-      key: "3",
-      icon: <AppstoreOutlined />,
-      children: [],
-      label: "Option 3",
-      title: "Option 3",
-    },
-  ];
+  const defaultSelectedKeys = ["sub1"];
+  const defaultOpenKeys = ["1"];
   return (
     <Sider
+      width={165}
       collapsible={true}
+      collapsed={collapsed}
       className={styles["my-sider"]}
       onCollapse={(collapsed) => {
         setCollapsed(collapsed);
@@ -55,12 +26,11 @@ const MySider = () => {
         <img alt="logo" src={collapsed ? logoCloseIcon : logoIcon} />
       </div>
       <Menu
-        defaultSelectedKeys={["sub1"]}
-        defaultOpenKeys={["1"]}
-        mode="inline"
+        defaultSelectedKeys={defaultSelectedKeys}
+        defaultOpenKeys={defaultOpenKeys}
         theme="dark"
-        inlineCollapsed={collapsed}
-        items={items}
+        mode={"inline"}
+        items={menuConfigs}
       />
     </Sider>
   );

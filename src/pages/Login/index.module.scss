@@ -60,10 +60,10 @@
             .logo {
               display: flex;
               align-items: baseline;
-              justify-content: center;
+              justify-content: space-between;
               font-size: 18px;
               font-weight: 500;
-              margin-bottom: 30px;
+              margin-bottom: 15px;
 
               > img {
                 display: block;
@@ -79,6 +79,10 @@
             }
 
             .login-content {
+              padding-top: 15px;
+              &.login-content-border{
+                border-top: 1px solid #999;
+              }
               .rapidly-enter {
                 display:flex;
                 align-items: center;
@@ -108,8 +112,8 @@
                 }
 
                 .rapidly-other {
-                  font-size: 14px;
-                  color: #000000;
+                  font-size: 13px;
+                  color: #666;
                   text-align: left;
                   width: 100%;
                   margin-top: 10px;

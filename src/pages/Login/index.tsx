@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button } from "antd";
+import { useNavigate } from "react-router-dom";
 import { localStorage } from "front-ent-tools";
+import classNames from "classnames";
 import resource from "@/resource";
 import { useStore } from "@/store/createStore";
 import VerifyModal from "./components/verifyModal";
@@ -14,6 +16,7 @@ export interface dataValProps {
 }
 const Login: React.FC = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
   const getValidCode = useStore((state) => state.getValidCode);
   const getUserInfo = useStore((state) => state.getUserInfo);
   const [userHP, setUserHP] = useState<string>("");
@@ -34,7 +37,7 @@ const Login: React.FC = () => {
     //监听键盘事件
     document.addEventListener("keyup", handleKeyUp, false);
     //检查是否处于登录状态
-    if (localStorage.get("accessToken")) {
+    if (localStorage.get("accessToken") && localStorage.get("appToken")) {
       getUserInfo().then((r) => {
         if (r?.user?.id) {
           setIsLogined(true);
@@ -59,7 +62,9 @@ const Login: React.FC = () => {
   const handleClose = () => {
     setVerifyFlag(false);
   };
-  const handleEnter = () => {};
+  const handleEnter = () => {
+    navigate("/");
+  };
   return (
     <div className={styles["login"]}>
       <div className={styles["warp"]}>
@@ -77,7 +82,12 @@ const Login: React.FC = () => {
                   <img src={resource.logo} alt="" />
                   <div className={styles["welcome"]}>后台管理系统</div>
                 </div>
-                <div className={styles["login-content"]}>
+                <div
+                  className={classNames({
+                    [styles["login-content"]]: true,
+                    [styles["login-content-border"]]: isLogined,
+                  })}
+                >
                   {isLogined ? (
                     <div className={styles["rapidly-enter"]}>
                       <div className={styles["rapidly-title"]}>
