@@ -1,6 +1,5 @@
 import { Layout, Breadcrumb } from "antd";
-import { Outlet } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import MySider from "./mySider";
 import MyHeader from "./myHeader";
 import MyFooter from "./myFooter";
@@ -24,6 +23,8 @@ const itemRender = (
   );
 };
 const MyLayout = () => {
+  const location = useLocation();
+  console.log(location.pathname);
   const breadProps = {
     itemRender,
     items: [
