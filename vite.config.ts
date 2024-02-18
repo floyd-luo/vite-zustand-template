@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import * as path from "path";
 import externalGlobals from "rollup-plugin-external-globals";
 import { createHtmlPlugin } from "vite-plugin-html";
+import { viteMockServe } from "vite-plugin-mock";
 import reactRefresh from "@vitejs/plugin-react-refresh";
 import { apiAddress, proxyApi } from "./src/utils/host";
 // https://vitejs.dev/config/
@@ -70,6 +71,10 @@ export default defineConfig({
   define: {},
   plugins: [
     reactRefresh(),
+    viteMockServe({
+      mockPath: "./mock/",
+      enable: true,
+    }),
     createHtmlPlugin({
       minify: true,
       inject: {

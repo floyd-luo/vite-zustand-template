@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Layout, Menu } from "antd";
+import { useStore } from "@/store/createStore";
 import menuConfigs from "./menuConfigs";
 import styles from "./index.module.scss";
 const { Sider } = Layout;
@@ -12,6 +13,8 @@ const MySider = () => {
   const [collapsed, setCollapsed] = useState(false);
   const defaultSelectedKeys = ["sub1"];
   const defaultOpenKeys = ["1"];
+  const menuList = useStore((state) => state.menuList);
+  console.log(menuList);
   return (
     <Sider
       width={165}

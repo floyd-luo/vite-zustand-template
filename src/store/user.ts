@@ -4,24 +4,28 @@ import { localStorage } from "front-ent-tools";
 import { Store } from "./createStore";
 
 const UserServe = user();
-export interface User {
+export interface UserInterface {
   user: any;
   dataPermission: any;
   userOtherInfo: any;
+  menuList: Array<any>;
   getUserInfo: () => Promise<any>;
+  getMenuList: () => Promise<any>;
 }
 
-export const initUser: User = {
+export const initUser: UserInterface = {
   user: {},
+  menuList: [],
   dataPermission: {},
   userOtherInfo: {},
   getUserInfo: () => new Promise(() => null),
+  getMenuList: () => new Promise(() => []),
 };
 export const createUser: StateCreator<
   Store,
   [],
-  [["zustand/persist", User]],
-  User
+  [["zustand/persist", UserInterface]],
+  UserInterface
 > = (set) => ({
   ...initUser,
   getUserInfo: async () => {
@@ -40,6 +44,17 @@ export const createUser: StateCreator<
       return { user, dataPermission, userOtherInfo };
     } else {
       return false;
+    }
+  },
+  getMenuList: async () => {
+    const res = await UserServe.getMenuList();
+    if (res?.resp_code === 0) {
+      set({
+        menuList: res?.data,
+      });
+      return res?.data;
+    } else {
+      return [];
     }
   },
 });

@@ -32,6 +32,7 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
   const accessToken = useStore((state) => state.accessToken);
   const getValidCode = useStore((state) => state.getValidCode);
   const getUserInfo = useStore((state) => state.getUserInfo);
+  const getMenuList = useStore((state) => state.getMenuList);
   const goLogin = useStore((state) => state.login);
 
   const refreshVerify = async () => {
@@ -125,6 +126,7 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
           });
           return;
         }
+        await getMenuList();
         navigate("/");
       }
     } else {

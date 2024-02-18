@@ -75,7 +75,7 @@ const menus: Array<menusInterface> = [
     ],
   },
 ];
-const menuConfigs: MenuProps["items"] = [
+const menuItems: MenuProps["items"] = [
   {
     key: "1",
     icon: <PieChartOutlined />,
@@ -116,4 +116,4 @@ const menuConfigs: MenuProps["items"] = [
     ],
   },
 ];
-export default menuConfigs;
+export default menuItems;

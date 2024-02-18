@@ -118,7 +118,12 @@ const Login: React.FC = () => {
                       >
                         快速进入
                       </Button>
-                      <div className={styles["rapidly-other"]}>
+                      <div
+                        className={styles["rapidly-other"]}
+                        onClick={() => {
+                          setIsLogined(false);
+                        }}
+                      >
                         使用其他账号登录
                       </div>
                     </div>

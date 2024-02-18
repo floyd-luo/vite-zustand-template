@@ -46,6 +46,7 @@ const apiAddress: envHostInterfaces = {
  * 开发代理前缀
  */
 const proxyApi = "/api";
+const mockEnable = true;
 // 静态资源前缀URL
 const fileResourceHost: envHostInterfaces = {
   dev: "http://192.168.10.21:30999", // 外网:无
@@ -54,7 +55,7 @@ const fileResourceHost: envHostInterfaces = {
   prod: "https://filecdn.ailecheng.com",
 };
 const staticResourceHost = "https://filecdn.ailecheng.com";
-const services = ((env: string): servicesInterfaces => ({
+const servicesEnums = (env: string): servicesInterfaces => ({
   NO_GATEWAY: env,
   SSO: `${env}/api-auth`,
   USER: `${env}/user-center`,
@@ -79,5 +80,14 @@ const services = ((env: string): servicesInterfaces => ({
   USERCENTER: `${env}/user-center`,
   TOB_MODULE_AGGSERVICE: `${env}/tob-module-aggservice`,
   MARKETING_SYNTHESIS_SERVICE: `${env}/marketing-synthesis-service`,
-}))(proxyApi);
-export { proxyApi, staticResourceHost, services, apiAddress, fileResourceHost };
+});
+const services = servicesEnums(proxyApi);
+const servicesMock = servicesEnums(mockEnable ? "" : proxyApi);
+export {
+  proxyApi,
+  staticResourceHost,
+  services,
+  apiAddress,
+  servicesMock,
+  fileResourceHost,
+};

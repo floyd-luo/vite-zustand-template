@@ -1,7 +1,7 @@
 import { request, host } from "@/utils";
 import { appObjInterface, configInterface } from "@/typeings/service";
 const { SSO, USERCENTER } = host.services;
-
+const { USERCENTER: USERCENTER_MOCK } = host.servicesMock;
 export const userConfig: Array<configInterface> = [
   {
     fn: "userInfo",
@@ -17,6 +17,11 @@ export const userConfig: Array<configInterface> = [
     fn: "updatePassword",
     method: "put",
     url: `${USERCENTER}/users/password`,
+  },
+  {
+    fn: "getMenuList",
+    method: "get",
+    url: `${USERCENTER_MOCK}/menus/current`,
   },
 ];
 export const user = () => {
