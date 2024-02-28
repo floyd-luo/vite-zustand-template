@@ -1,7 +1,6 @@
 import { StateCreator } from "zustand";
 import { persist } from "zustand/middleware";
 import { app } from "@/services";
-import { Store } from "./createStore";
 
 const AppServe = app();
 interface deviceIdInterface {
@@ -33,6 +32,7 @@ export interface TokenStateInterface
   resetToken: () => void;
   getAppToken: () => void;
   login: (params: loginParamsInterface) => any;
+  logout: () => any;
   getValidCode: () => void;
 }
 const initToken: TokenInterface = {
@@ -48,13 +48,14 @@ export const initState: TokenStateInterface = {
   resetToken: () => null,
   getAppToken: () => null,
   login: () => null,
+  logout: () => null,
   getValidCode: () => null,
 };
 export const createToken: StateCreator<
-  Store,
+  TokenStateInterface,
   [],
   [["zustand/persist", TokenStateInterface]],
-    TokenStateInterface
+  TokenStateInterface
 > = persist(
   (set) => ({
     ...initState,
@@ -97,6 +98,16 @@ export const createToken: StateCreator<
         return e;
       }
     },
+    logout: async () => {
+      try {
+        const res = await AppServe.logout();
+        if (res?.resp_code === 0) {
+          return res.data;
+        }
+      } catch (e) {
+        return e;
+      }
+    },
     getValidCode: async () => {
       const res = await AppServe.getValidImg();
       if (res?.resp_code === 0) {
@@ -104,5 +115,5 @@ export const createToken: StateCreator<
       }
     },
   }),
-  { name: "app-storage" }
+  { name: "userToken" }
 );

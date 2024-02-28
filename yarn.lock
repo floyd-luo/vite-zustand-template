@@ -2080,10 +2080,10 @@ form-data@^4.0.0:
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
 
-front-ent-tools@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/front-ent-tools/-/front-ent-tools-1.0.2.tgz"
-  integrity sha512-Br9CHsJsuRc6oRtPW6VLFDGi59+MUJ69FKYgtkcuCuYQJ7qHpTwNDixm0f21GhfqZ1iFGU+6zJ8g8304SUY0kA==
+front-ent-tools@1.0.3-2:
+  version "1.0.3-2"
+  resolved "https://registry.npmjs.org/front-ent-tools/-/front-ent-tools-1.0.3-2.tgz#7477e429c291478573ad8825e789d47979f6526e"
+  integrity sha512-oa1/xfZv1ZKLrD/e8jCjrFM2jnm4EWYadGIfrgdjyIy/0ukXgKFteORwoCqA3VgUE+ZUid3gLD/GDZLvt4m6AA==
   dependencies:
     "@babel/preset-stage-2" "^7.8.3"
     "@babel/runtime-corejs3" "^7.12.13"
@@ -4013,10 +4013,10 @@ v8-compile-cache@^2.0.3:
   resolved "https://registry.npmjs.org/v8-compile-cache/-/v8-compile-cache-2.4.0.tgz"
   integrity sha512-ocyWc3bAHBB/guyqJQVI5o4BZkPhznPYUG2ea80Gond/BgNWpap8TOmLSeeQG7bnh2KMISxskdADG59j7zruhw==
 
-vite-plugin-html@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/vite-plugin-html/-/vite-plugin-html-3.2.0.tgz"
-  integrity sha512-2VLCeDiHmV/BqqNn5h2V+4280KRgQzCFN47cst3WiNK848klESPQnzuC3okH5XHtgwHH/6s1Ho/YV6yIO0pgoQ==
+vite-plugin-html@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.npmjs.org/vite-plugin-html/-/vite-plugin-html-3.2.2.tgz#661834fa09015d3fda48ba694dbaa809396f5f7a"
+  integrity sha512-vb9C9kcdzcIo/Oc3CLZVS03dL5pDlOFuhGlZYDCJ840BhWl/0nGeZWf3Qy7NlOayscY4Cm/QRgULCQkEZige5Q==
   dependencies:
     "@rollup/pluginutils" "^4.2.0"
     colorette "^2.0.16"

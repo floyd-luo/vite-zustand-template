@@ -1,47 +1,39 @@
 import { Layout, Breadcrumb } from "antd";
 import { Outlet, Link, useLocation } from "react-router-dom";
+import { userStore } from "@/store/createStore.ts";
 import MySider from "./mySider";
 import MyHeader from "./myHeader";
 import MyFooter from "./myFooter";
 import styles from "./copyright.module.scss";
-import { ItemType } from "antd/es/breadcrumb/Breadcrumb";
 
 const { Content } = Layout;
-const itemRender = (
-  route: ItemType,
-  params: any,
-  routes: ItemType[],
-  paths: string[]
-) => {
-  const last = routes.indexOf(route) === routes.length - 1;
-  return last ? (
-    <span>{route.title}</span>
-  ) : (
-    <Link to={paths.join("/")} state={params}>
-      {route.title}
-    </Link>
-  );
+const createBreadItems = (menuObj: any, path: string, menList: any[]) => {
+  let r: any[] = [];
+  Object.keys(menuObj).forEach((key) => {
+    menuObj[key].forEach((_item: string, idx: number) => {
+      if (_item === path) {
+        const menuListSlice = menList[Number(key)].slice(0, idx + 1);
+        r = menuListSlice?.map((item: { path: string; title: string }) => ({
+          title: item?.path ? (
+            <Link to={item?.path}>{item?.title}</Link>
+          ) : (
+            item?.title
+          ),
+        }));
+      }
+    });
+  });
+  return r;
 };
 const MyLayout = () => {
   const location = useLocation();
-  console.log(location.pathname);
-  const breadProps = {
-    itemRender,
-    items: [
-      {
-        title: "Home",
-      },
-      {
-        title: "Application Center",
-      },
-      {
-        title: "Application List",
-      },
-      {
-        title: "An Application",
-      },
-    ],
-  };
+  const pathMenuList = userStore((state) => state.pathMenuList);
+  const pathMenuListObj = userStore((state) => state.pathMenuListObj);
+  const breadItems = createBreadItems(
+    pathMenuListObj,
+    location.pathname,
+    pathMenuList
+  );
   return (
     <Layout>
       <MySider />
@@ -55,7 +47,7 @@ const MyLayout = () => {
             paddingRight: "16px",
           }}
         >
-          <Breadcrumb {...breadProps} />
+          <Breadcrumb items={breadItems} />
           <div
             style={{
               background: "#fff",

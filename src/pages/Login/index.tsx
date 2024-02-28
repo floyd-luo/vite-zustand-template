@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button } from "antd";
 import { useNavigate } from "react-router-dom";
-import { localStorage } from "front-ent-tools";
 import classNames from "classnames";
 import resource from "@/resource";
-import { useStore } from "@/store/createStore";
+import { userStore, tokenStore } from "@/store/createStore";
 import VerifyModal from "./components/verifyModal";
 import { websiteApprove, getDefaultHP } from "@/utils";
 import style from "@/styls/copyright.module.scss";
@@ -17,15 +16,16 @@ export interface dataValProps {
 const Login: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const getValidCode = useStore((state) => state.getValidCode);
-  const getUserInfo = useStore((state) => state.getUserInfo);
+  const logout = tokenStore((state) => state.logout);
+  const getValidCode = tokenStore((state) => state.getValidCode);
+  const isLoggedIn = userStore((state) => state.isLoggedIn);
+  const updateLoginStatus = userStore((state) => state.updateLoginStatus);
   const [userHP, setUserHP] = useState<string>("");
-  const user = useStore((state) => state.user);
+  const user = userStore((state) => state.user);
   const [dataVal, setDataVal] = useState<dataValProps>({
     username: "",
     password: "",
   });
-  const [isLogined, setIsLogined] = useState<boolean>(false);
   const [verifyFlag, setVerifyFlag] = useState<boolean>(false);
   const handleKeyUp = async (e: any) => {
     const keyCode = e.code;
@@ -36,14 +36,6 @@ const Login: React.FC = () => {
   useEffect(() => {
     //监听键盘事件
     document.addEventListener("keyup", handleKeyUp, false);
-    //检查是否处于登录状态
-    if (localStorage.get("accessToken") && localStorage.get("appToken")) {
-      getUserInfo().then((r) => {
-        if (r?.user?.id) {
-          setIsLogined(true);
-        }
-      });
-    }
     return () => {
       //销毁键盘事件
       document.removeEventListener("keyup", handleKeyUp, false);
@@ -85,10 +77,10 @@ const Login: React.FC = () => {
                 <div
                   className={classNames({
                     [styles["login-content"]]: true,
-                    [styles["login-content-border"]]: isLogined,
+                    [styles["login-content-border"]]: isLoggedIn,
                   })}
                 >
-                  {isLogined ? (
+                  {isLoggedIn ? (
                     <div className={styles["rapidly-enter"]}>
                       <div className={styles["rapidly-title"]}>
                         为保障您的账号安全，请确认继续用以下账号登录
@@ -120,8 +112,11 @@ const Login: React.FC = () => {
                       </Button>
                       <div
                         className={styles["rapidly-other"]}
-                        onClick={() => {
-                          setIsLogined(false);
+                        onClick={async () => {
+                          const res = await logout();
+                          if (res) {
+                            updateLoginStatus(false);
+                          }
                         }}
                       >
                         使用其他账号登录

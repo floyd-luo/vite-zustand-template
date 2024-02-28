@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Layout, Menu } from "antd";
 import {
   LogoutOutlined,
   CommentOutlined,
   FormOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
+import { tokenStore, userStore } from "@/store/createStore.ts";
 import style from "./index.module.scss";
 const { Header } = Layout;
 
@@ -23,16 +24,22 @@ interface MyHeaderInstance {
 const MyHeader: React.FC<MyHeaderInstance> = (props) => {
   const { user = { staffName: "罗方国", gender: 1 } } = props;
   const navigate = useNavigate();
-  const handleClickMenu = () => {
-    console.log("退出登录");
+  const logout = tokenStore((state) => state.logout);
+  const updateLoginStatus = userStore((state) => state.updateLoginStatus);
+  const handleClickMenu = async () => {
+    await logout();
+    updateLoginStatus(false);
     navigate("/login");
   };
   const handleUpdatePassword = () => {
     console.log("修改密码");
   };
+  const handleImprovement = () => {
+    console.log("改进建议");
+  };
   const items = [
     {
-      label: "改进建议",
+      label: <span onClick={handleImprovement}>改进建议</span>,
       key: "comment",
       icon: <CommentOutlined />,
     },

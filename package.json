@@ -21,7 +21,7 @@
     "antd": "^5.12.1",
     "axios": "^1.6.2",
     "classnames": "^2.3.2",
-    "front-ent-tools": "1.0.2",
+    "front-ent-tools": "1.0.3-2",
     "moment": "^2.29.4",
     "navigator-info": "^1.1.0",
     "qs": "^6.11.2",
@@ -55,7 +55,7 @@
     "tslib": "^2.6.2",
     "typescript": "^5.3.2",
     "vite": "5.1.1",
-    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-html": "^3.2.2",
     "vite-plugin-mock": "^3.0.1"
   }
 }

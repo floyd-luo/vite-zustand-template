@@ -17,6 +17,11 @@ export const app = () => {
       Authorization: false,
     },
     {
+      fn: "logout",
+      method: "delete",
+      url: `${SSO}/oauth/remove/token`,
+    },
+    {
       fn: "getValidImg",
       method: "get",
       url: `${SSO}/validata/dragcode`,

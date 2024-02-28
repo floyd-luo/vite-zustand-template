@@ -8,13 +8,13 @@
   }
 
   input:-webkit-autofill {
-    transition: background 5000s ease-in-out 0s;
+    box-shadow:0 0 0 1000px transparent inset !important; // 颜色可以随意，这里设置的是透明色
   }
-
-  input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #333 !important;
+  input:-internal-autofill-previewed,
+  input:-internal-autofill-selected {
+    -webkit-text-fill-color: #333 !important; // 可加可不加
+    transition: background-color 5000s ease-in-out 0s !important;
   }
-
   .warp {
     width: 1120px;
     margin: 0 auto;

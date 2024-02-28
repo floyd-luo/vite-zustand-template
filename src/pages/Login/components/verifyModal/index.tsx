@@ -4,7 +4,7 @@ import { CloseOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import { localStorage, getAccessCode } from "front-ent-tools";
 import { useNavigate } from "react-router-dom";
 import { shallow } from "zustand/shallow";
-import { useStore } from "@/store/createStore";
+import { userStore, tokenStore } from "@/store/createStore";
 import { dataValProps } from "../../index";
 import useLongPress from "./LongPress";
 import styles from "./index.module.scss";
@@ -20,7 +20,7 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
   const [initX, setInitX] = useState(0);
   const [moveX, setMoveX] = useState(0);
   const [spinLoading, setSpinLoading] = useState(false);
-  const { originalImage, yheight, slidingImage, deviceId } = useStore(
+  const { originalImage, yheight, slidingImage, deviceId } = tokenStore(
     (state) => ({
       originalImage: state.originalImage,
       yheight: state.yheight,
@@ -29,11 +29,13 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
     }),
     shallow
   );
-  const accessToken = useStore((state) => state.accessToken);
-  const getValidCode = useStore((state) => state.getValidCode);
-  const getUserInfo = useStore((state) => state.getUserInfo);
-  const getMenuList = useStore((state) => state.getMenuList);
-  const goLogin = useStore((state) => state.login);
+  const updateLoginStatus = userStore((state) => state.updateLoginStatus);
+  const accessToken = tokenStore((state) => state.accessToken);
+  const getValidCode = tokenStore((state) => state.getValidCode);
+  const getUserInfo = userStore((state) => state.getUserInfo);
+  const getMenuList = userStore((state) => state.getMenuList);
+  const goLogin = tokenStore((state) => state.login);
+  const defaultSelectedPath = userStore((state) => state.defaultSelectedPath);
 
   const refreshVerify = async () => {
     setInitX(0);
@@ -97,7 +99,6 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
       dragXpos: moveX,
       accesCode: getAccessCode("1"),
     });
-    setSpinLoading(false);
     if (isLoginRes?.success) {
       onCloseModal();
       const userInfo = await getUserInfo();
@@ -127,7 +128,9 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
           return;
         }
         await getMenuList();
-        navigate("/");
+        updateLoginStatus(true);
+        navigate(defaultSelectedPath);
+        setSpinLoading(false);
       }
     } else {
       message.error(isLoginRes?.message);
@@ -157,56 +160,55 @@ const VerifyModal: React.FC<VerifyModalProps> = (props) => {
                 <CloseOutlined />
               </div>
             </div>
-            <Spin spinning={spinLoading} tip="加载中">
-              <div className={styles["verify-content"]}>
-                <div className={styles["verify-bg"]}>
-                  {originalImage && (
-                    <>
+            <div className={styles["verify-content"]}>
+              <div className={styles["verify-bg"]}>
+                {originalImage && (
+                  <>
+                    <img
+                      className={styles["verify-img-bg"]}
+                      src={"data:image/png;base64," + originalImage}
+                      alt=""
+                      onMouseDown={(e) => e.preventDefault()}
+                    />
+                    <div
+                      className={styles["verify-move"]}
+                      {...longPressEvent}
+                      style={{
+                        top: `${yheight}px`,
+                        left: `${moveX}px`,
+                      }}
+                    >
                       <img
-                        className={styles["verify-img-bg"]}
-                        src={"data:image/png;base64," + originalImage}
+                        className={styles["verify-img-slider"]}
+                        src={"data:image/png;base64," + slidingImage}
                         alt=""
                         onMouseDown={(e) => e.preventDefault()}
                       />
-                      <div
-                        className={styles["verify-move"]}
-                        {...longPressEvent}
-                        style={{
-                          top: `${yheight}px`,
-                          left: `${moveX}px`,
-                        }}
-                      >
-                        <img
-                          className={styles["verify-img-slider"]}
-                          src={"data:image/png;base64," + slidingImage}
-                          alt=""
-                          onMouseDown={(e) => e.preventDefault()}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div className={styles.sliderContainer}>
-                  向右滑动填充拼图
-                  <div
-                    className={`${styles["sliderMask"]} ${
-                      moveX > 0 ? styles["sidler-border"] : ""
-                    }`}
-                    style={{ width: `${moveX}px` }}
-                  ></div>
-                  <div
-                    {...longPressEvent}
-                    className={styles["slider"]}
-                    style={{ left: `${moveX}px` }}
-                  >
-                    <ArrowRightOutlined />
-                  </div>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className={styles.sliderContainer}>
+                向右滑动填充拼图
+                <div
+                  className={`${styles["sliderMask"]} ${
+                    moveX > 0 ? styles["sidler-border"] : ""
+                  }`}
+                  style={{ width: `${moveX}px` }}
+                ></div>
+                <div
+                  {...longPressEvent}
+                  className={styles["slider"]}
+                  style={{ left: `${moveX}px` }}
+                >
+                  <ArrowRightOutlined />
                 </div>
               </div>
-            </Spin>
+            </div>
           </div>
         </div>
       ) : null}
+      <Spin spinning={spinLoading} fullscreen />
     </>
   );
 };
