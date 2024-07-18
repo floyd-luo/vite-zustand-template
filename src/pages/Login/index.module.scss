@@ -1,14 +1,15 @@
 .login {
   width: 100vw;
   height: 100vh;
-  background: #FF7400;
+  background: #FFF;
 
   input {
     background: rgba(255, 255, 255, 0) !important;
   }
 
   input:-webkit-autofill {
-    box-shadow:0 0 0 1000px transparent inset !important; // 颜色可以随意，这里设置的是透明色
+    -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+    box-shadow: inset 0 0 0 1000px #FFFFFF !important;
   }
   input:-internal-autofill-previewed,
   input:-internal-autofill-selected {
@@ -117,6 +118,7 @@
                   text-align: left;
                   width: 100%;
                   margin-top: 10px;
+                  cursor: pointer;
                 }
               }
 

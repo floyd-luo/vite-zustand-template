@@ -6,8 +6,11 @@
   align-items: center;
   justify-content: center;
   height: 96px;
-
-  img {
+  .logoCloseIcon{
+    width: 75px;
+    height: auto;
+  }
+  .logoIcon{
     height: 65px;
   }
 }

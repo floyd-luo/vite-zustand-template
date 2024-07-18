@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
-import resource from "@/resource";
 import { userStore, tokenStore } from "@/store/createStore";
 import VerifyModal from "./components/verifyModal";
 import { websiteApprove, getDefaultHP } from "@/utils";
@@ -64,15 +63,16 @@ const Login: React.FC = () => {
           <div className={styles["content"]}>
             <div className={styles["left"]}>
               <img
-                src="https://filecdn.ailecheng.com/20231215/75909f362f2dec34a7cdc3fdf5a9116b.webp"
+                src="https://filecdn.ailecheng.com/20240718/0cf370bda503b77e77434eadb862259a.png"
                 alt=""
               />
             </div>
             <div className={styles["right"]}>
               <div className={styles["right-content"]}>
                 <div className={styles["logo"]}>
-                  <img src={resource.logo} alt="" />
-                  <div className={styles["welcome"]}>后台管理系统</div>
+                  <div className={styles["welcome"]}>
+                    {isLoggedIn ? "后台管理系统" : "登录"}
+                  </div>
                 </div>
                 <div
                   className={classNames({
